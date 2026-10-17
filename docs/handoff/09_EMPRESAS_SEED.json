@@ -1,0 +1,50 @@
+{
+  "_leia": "Seed das empresas proponentes. Campos vazios devem ser completados no app. timbre_url fica em branco até o upload.",
+  "_sanitizacao": "Versão saneada p/ repositório: CPF, RG, representante, telefone, e-mail e dados bancários removidos (dados pessoais, LGPD). Preencher em ambiente local.",
+  "empresas": [
+    {
+      "apelido": "A.Luz",
+      "razao_social": "ANGRA LUZ COMERCIO E DISTRIBUIDORA DE MATERIAIS ELETRICOS LTDA",
+      "cnpj": "13.652.354/0001-62",
+      "ie": "11.276.504",
+      "endereco": "Rua Francelino Alves de Lima, n 101 - Nova Angra",
+      "municipio": "Angra dos Reis",
+      "uf": "RJ",
+      "cep": "",
+      "telefone": "",
+      "email": "",
+      "representante": "",
+      "cpf": "",
+      "rg": "",
+      "banco": "",
+      "agencia": "",
+      "conta": "",
+      "simples_nacional": true,
+      "porte": "DEMAIS",
+      "porte_observacao": "Optante do Simples Nacional.",
+      "timbre_url": ""
+    },
+    {
+      "apelido": "JLV",
+      "razao_social": "JLV COMERCIO PARA CONSTRUCAO LTDA",
+      "cnpj": "43.394.424/0001-90",
+      "ie": "",
+      "endereco": "Av. Itaguai, 224 - Nova Angra (Cunhambebe)",
+      "municipio": "Angra dos Reis",
+      "uf": "RJ",
+      "cep": "23.933-115",
+      "telefone": "",
+      "email": "",
+      "representante": "",
+      "cpf": "",
+      "rg": "",
+      "banco": "",
+      "agencia": "",
+      "conta": "",
+      "simples_nacional": true,
+      "porte": "EPP",
+      "porte_observacao": "Grupo CMV Eletrica e Construcao. EPP (LC 123/2006).",
+      "timbre_url": ""
+    }
+  ]
+}
