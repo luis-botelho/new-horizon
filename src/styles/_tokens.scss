@@ -1,0 +1,58 @@
+// Fonte de verdade do Design System. Componentes consomem apenas var(--nh-*).
+// Cores de prazo e risco são semânticas: nunca use hex direto em componentes.
+
+:root {
+  --nh-surface: #f4f7f6;
+  --nh-surface-raised: #ffffff;
+  --nh-border: #d3dedc;
+  --nh-content: #12262a;
+  --nh-content-muted: #4f6468;
+
+  --nh-brand: #0e6b73;
+  --nh-brand-contrast: #ffffff;
+  --nh-sun: #e8a317; // acento do "horizonte": usado só no medidor de prazo
+
+  --nh-deadline-safe: #2b7a4b;
+  --nh-deadline-warning: #9a6200;
+  --nh-deadline-critical: #b3342b;
+  --nh-deadline-expired: #6b7a7d;
+
+  --nh-risk-low: #2b7a4b;
+  --nh-risk-medium: #9a6200;
+  --nh-risk-high: #b3342b;
+
+  --nh-space-1: 0.25rem;
+  --nh-space-2: 0.5rem;
+  --nh-space-3: 0.75rem;
+  --nh-space-4: 1rem;
+  --nh-space-6: 1.5rem;
+  --nh-space-8: 2rem;
+
+  --nh-radius-sm: 4px;
+  --nh-radius-md: 10px;
+
+  --nh-font-display: var(--font-display), system-ui, sans-serif;
+  --nh-font-body: var(--font-body), system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nh-surface: #0c1a1d;
+    --nh-surface-raised: #132629;
+    --nh-border: #264146;
+    --nh-content: #e6efee;
+    --nh-content-muted: #9ab0b3;
+
+    --nh-brand: #4cc2cc;
+    --nh-brand-contrast: #06191c;
+
+    --nh-deadline-safe: #5fc58a;
+    --nh-deadline-warning: #e8a317;
+    --nh-deadline-critical: #ff7a70;
+    --nh-deadline-expired: #8fa0a3;
+
+    --nh-risk-low: #5fc58a;
+    --nh-risk-medium: #e8a317;
+    --nh-risk-high: #ff7a70;
+  }
+}

@@ -1,0 +1,9 @@
+node_modules
+.next
+.env
+.env.local
+*.tsbuildinfo
+
+# Dados reais da empresa (CPF, bancários, balanços) — não versionar (LGPD).
+# O pacote de metodologia saneado vive em docs/handoff/.
+pasta exemplo/

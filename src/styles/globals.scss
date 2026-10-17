@@ -1,0 +1,39 @@
+@use "tokens";
+@use "mixins" as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--nh-surface);
+  color: var(--nh-content);
+  font-family: var(--nh-font-body);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--nh-font-display);
+  line-height: 1.2;
+  margin: 0;
+}
+
+a {
+  color: var(--nh-brand);
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

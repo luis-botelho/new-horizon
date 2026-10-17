@@ -1,0 +1,38 @@
+.column {
+  flex: 0 0 17.5rem;
+  display: grid;
+  align-content: start;
+  gap: var(--nh-space-3);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--nh-space-2);
+  border-bottom: 2px solid var(--nh-brand);
+
+  h2 {
+    font-size: 1rem;
+  }
+}
+
+.count {
+  font-size: 0.875rem;
+  color: var(--nh-content-muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nh-content-muted);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--nh-space-4);
+  border: 1px dashed var(--nh-border);
+  border-radius: var(--nh-radius-md);
+  font-size: 0.875rem;
+  color: var(--nh-content-muted);
+}

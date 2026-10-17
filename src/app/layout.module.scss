@@ -1,0 +1,24 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--nh-space-4) var(--nh-space-6);
+  border-bottom: 1px solid var(--nh-border);
+  background: var(--nh-surface-raised);
+}
+
+.brand {
+  font-family: var(--nh-font-display);
+  font-weight: 700;
+  color: var(--nh-content);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: var(--nh-space-4);
+}
+
+.main {
+  padding: var(--nh-space-8) var(--nh-space-6);
+}

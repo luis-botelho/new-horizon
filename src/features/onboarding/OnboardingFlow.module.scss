@@ -1,0 +1,30 @@
+.root {
+  max-width: 34rem;
+  display: grid;
+  gap: var(--nh-space-6);
+}
+
+.progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--nh-border);
+  overflow: hidden;
+
+  > div {
+    height: 100%;
+    background: var(--nh-brand);
+    transition: width 0.3s;
+  }
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--nh-content-muted);
+}
+
+.options {
+  display: grid;
+  gap: var(--nh-space-3);
+}

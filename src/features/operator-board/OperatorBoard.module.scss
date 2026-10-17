@@ -1,0 +1,26 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--nh-space-3);
+  margin-bottom: var(--nh-space-6);
+
+  select {
+    font: inherit;
+    padding: var(--nh-space-1) var(--nh-space-2);
+    border-radius: var(--nh-radius-sm);
+    border: 1px solid var(--nh-border);
+    background: var(--nh-surface-raised);
+    color: inherit;
+  }
+}
+
+.columns {
+  display: flex;
+  gap: var(--nh-space-6);
+  overflow-x: auto;
+  padding-bottom: var(--nh-space-4);
+}
+
+.status {
+  color: var(--nh-content-muted);
+}

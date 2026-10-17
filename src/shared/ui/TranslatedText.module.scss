@@ -1,0 +1,22 @@
+.root {
+  display: grid;
+  gap: var(--nh-space-2);
+}
+
+.simple {
+  margin: 0;
+  font-weight: 600;
+}
+
+.official {
+  font-size: 0.875rem;
+  color: var(--nh-content-muted);
+
+  summary {
+    cursor: pointer;
+  }
+
+  p {
+    margin: var(--nh-space-2) 0 0;
+  }
+}

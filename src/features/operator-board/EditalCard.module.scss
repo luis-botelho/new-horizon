@@ -1,0 +1,46 @@
+.card {
+  display: grid;
+  gap: var(--nh-space-3);
+  padding: var(--nh-space-4);
+  background: var(--nh-surface-raised);
+  border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius-md);
+}
+
+.where {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nh-content-muted);
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--nh-space-2);
+  font-size: 0.875rem;
+}
+
+.docs {
+  color: var(--nh-content-muted);
+}
+
+.move {
+  display: grid;
+  gap: var(--nh-space-1);
+  font-size: 0.8125rem;
+
+  select {
+    font: inherit;
+    padding: var(--nh-space-1) var(--nh-space-2);
+    border-radius: var(--nh-radius-sm);
+    border: 1px solid var(--nh-border);
+    background: var(--nh-surface);
+    color: inherit;
+  }
+}
+
+.blocked {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nh-risk-high);
+}

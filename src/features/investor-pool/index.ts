@@ -1,0 +1,1 @@
+export { RiskNotice } from './RiskNotice';

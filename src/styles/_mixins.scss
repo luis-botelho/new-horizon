@@ -1,0 +1,19 @@
+@mixin focus-ring {
+  outline: 2px solid var(--nh-brand);
+  outline-offset: 2px;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@mixin from($min) {
+  @media (min-width: $min) {
+    @content;
+  }
+}

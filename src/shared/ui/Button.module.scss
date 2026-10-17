@@ -1,0 +1,31 @@
+@use 'mixins' as *;
+
+.button {
+  font: inherit;
+  font-weight: 600;
+  padding: var(--nh-space-2) var(--nh-space-4);
+  border-radius: var(--nh-radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.primary {
+  background: var(--nh-brand);
+  color: var(--nh-brand-contrast);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--nh-content);
+  border-color: var(--nh-border);
+
+  &:hover:not(:disabled) {
+    background: var(--nh-surface);
+  }
+}
