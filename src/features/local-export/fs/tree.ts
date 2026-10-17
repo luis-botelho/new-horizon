@@ -13,7 +13,7 @@ export const COTACAO_SUBDIR_COUNT = 3;
 export const DOCUMENTACAO_DIR = '3- DOCUMENTAÇÃO';
 export const ANEXOS_DIR = '4- ANEXOS';
 
-export type ExportContent = string | Uint8Array | ArrayBuffer | Blob;
+export type ExportContent = string | Uint8Array<ArrayBuffer> | ArrayBuffer | Blob;
 
 export interface ExportEntry {
   /** Segmentos do caminho relativo à pasta raiz (1..n). */

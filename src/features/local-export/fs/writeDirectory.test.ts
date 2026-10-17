@@ -5,10 +5,10 @@ import { writeTreeToDirectory } from './writeDirectory';
 import type { ExportEntry } from './tree';
 
 class MemoryWritable implements WritableFile {
-  chunks: (string | ArrayBuffer | ArrayBufferView | Blob)[] = [];
+  chunks: (string | Blob | BufferSource)[] = [];
   closed = false;
 
-  async write(data: string | ArrayBuffer | ArrayBufferView | Blob): Promise<void> {
+  async write(data: string | Blob | BufferSource): Promise<void> {
     this.chunks.push(data);
   }
 
@@ -29,7 +29,11 @@ class MemoryFile {
   text(): string {
     return this.writables
       .flatMap((writable) => writable.chunks)
-      .map((chunk) => (typeof chunk === 'string' ? chunk : `<bin:${chunk instanceof Blob ? chunk.size : (chunk as ArrayBufferView).byteLength}>`))
+      .map((chunk) =>
+        typeof chunk === 'string'
+          ? chunk
+          : `<bin:${chunk instanceof Blob ? chunk.size : chunk.byteLength}>`,
+      )
       .join('');
   }
 }

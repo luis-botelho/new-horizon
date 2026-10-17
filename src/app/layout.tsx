@@ -25,6 +25,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           </Link>
           <nav className={styles.nav} aria-label="Principal">
             <Link href="/onboarding">Começar</Link>
+            <Link href="/novo-edital">Novo edital</Link>
             <Link href="/operador">Meus editais</Link>
             {env.investorPool && <Link href="/investidor">Investir</Link>}
           </nav>

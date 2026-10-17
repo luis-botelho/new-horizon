@@ -5,6 +5,7 @@ import {
   sanitizeFolderSegment,
   suggestNumeroSegment,
   suggestOrgaoSegment,
+  suggestTipoSegment,
 } from './folderName';
 
 describe('sanitizeFolderSegment', () => {
@@ -67,5 +68,12 @@ describe('sugestões', () => {
   it('segmento do órgão é a primeira palavra saneada', () => {
     expect(suggestOrgaoSegment('Prefeitura Municipal de Angra dos Reis')).toBe('PREFEITURA');
     expect(suggestOrgaoSegment('Câmara dos Deputados')).toBe('CAMARA');
+  });
+
+  it('segmento de tipo usa até 3 palavras do objeto saneadas', () => {
+    expect(suggestTipoSegment('Materiais de limpeza e escritório')).toBe('MATERIAIS DE LIMPEZA');
+    expect(suggestTipoSegment('Cama, mesa e banho')).toBe('CAMA MESA E');
+    expect(suggestTipoSegment('Enxoval')).toBe('ENXOVAL');
+    expect(suggestTipoSegment('   ')).toBe('');
   });
 });

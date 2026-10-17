@@ -1,0 +1,149 @@
+@use 'mixins' as *;
+
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-6);
+}
+
+.step {
+  background: var(--nh-surface-raised);
+  border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius-md);
+  padding: var(--nh-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-4);
+  align-items: flex-start;
+}
+
+.hint {
+  margin: 0;
+  color: var(--nh-content-muted);
+}
+
+.importForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-3);
+  width: 100%;
+}
+
+.fileLabel {
+  cursor: pointer;
+  color: var(--nh-brand);
+
+  input {
+    @include visually-hidden;
+  }
+}
+
+.textarea {
+  width: 100%;
+  font: inherit;
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+  padding: var(--nh-space-2);
+  border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius-sm);
+  background: var(--nh-surface);
+  color: inherit;
+  resize: vertical;
+}
+
+.issues {
+  color: var(--nh-deadline-critical);
+
+  ul {
+    margin: var(--nh-space-2) 0 0;
+    padding-left: var(--nh-space-6);
+  }
+}
+
+.warning {
+  margin: 0;
+  color: var(--nh-deadline-warning);
+  font-weight: 600;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--nh-space-3);
+  margin: 0;
+  width: 100%;
+
+  dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--nh-content-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--nh-space-2);
+    border-bottom: 1px solid var(--nh-border);
+    vertical-align: top;
+  }
+
+  th {
+    color: var(--nh-content-muted);
+    font-weight: 600;
+  }
+}
+
+.divergent td {
+  background: color-mix(in srgb, var(--nh-deadline-warning) 12%, transparent);
+}
+
+.description {
+  max-width: 28rem;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nh-space-4);
+  width: 100%;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nh-space-1);
+    font-size: 0.875rem;
+    color: var(--nh-content-muted);
+  }
+
+  input {
+    font: inherit;
+    color: inherit;
+    padding: var(--nh-space-1) var(--nh-space-2);
+    border: 1px solid var(--nh-border);
+    border-radius: var(--nh-radius-sm);
+    background: var(--nh-surface);
+    min-width: 16rem;
+  }
+}
+
+.status {
+  margin: 0;
+  color: var(--nh-content-muted);
+  min-height: 1.5rem;
+}

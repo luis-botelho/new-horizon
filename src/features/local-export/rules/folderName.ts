@@ -61,6 +61,21 @@ export function suggestNumeroSegment(certificateNumber: string): string {
 }
 
 /**
+ * Sugestão de segmento de tipo/material: até as `maxWords` primeiras palavras
+ * do objeto, sem pontuação. "Materiais de limpeza e escritório" →
+ * "MATERIAIS DE LIMPEZA".
+ */
+export function suggestTipoSegment(objeto: string, maxWords = 3): string {
+  const words = objeto
+    .trim()
+    .replace(/[,.:;()/]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, maxWords);
+  return sanitizeFolderSegment(words.join(' '));
+}
+
+/**
  * Sugestão de segmento do órgão: primeira palavra (a variante documentada).
  * "Prefeitura Municipal de Angra dos Reis" → "PREFEITURA".
  * Alternativa prevista no handoff: usar o município ("ANGRADOSREIS").

@@ -24,5 +24,5 @@ export async function buildZipBlob(entries: readonly ExportEntry[]): Promise<Blo
 export function contentToBlob(content: ExportContent, mimeType: string): Blob {
   if (content instanceof Blob) return content;
   if (typeof content === 'string') return new Blob([content], { type: `${mimeType};charset=utf-8` });
-  return new Blob([content as BlobPart], { type: mimeType });
+  return new Blob([content], { type: mimeType });
 }

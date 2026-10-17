@@ -4,7 +4,7 @@
 import type { ExportEntry } from './tree';
 
 export interface WritableFile {
-  write(data: Blob | string | ArrayBuffer | ArrayBufferView): Promise<void>;
+  write(data: Blob | string | BufferSource): Promise<void>;
   close(): Promise<void>;
 }
 
