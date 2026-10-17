@@ -15,6 +15,7 @@ Exemplo (caso-base deste projeto):
 Variações aceitas (a definir no cadastro):
 - `{NUM}-{PREFEITURA}-{TIPO}`  → `5522026 - PREFEITURA - CAMA MESA`
 - `{NUM}-{PREFEITURA}-{OBJETO}` → `90070-2026 - ANGRADOSREIS - ENXOVAL`
+- `{NUM}-{PREFEITURA}-{TIPO}`   → `123452026 - PREFEITURA - MATERIAIS DE LIMPEZA`
 
 > O app deve SEMPRE oferecer o nome sugerido e permitir editar antes de criar.
 

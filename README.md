@@ -24,6 +24,11 @@ O New Horizon quer ser o "Wall Street das Licitações": transparência de merca
 3. **Transparência:** rankings de órgãos e pregões *(roadmap)*.
 4. **Marketplace:** operadores e investidores *(roadmap, depende de parecer regulatório)*.
 
+Além do produto acima, o app já roda um **motor local de back-office**: a partir
+do JSON de um edital ele gera, **no navegador e sem enviar dados a lugar nenhum**,
+a árvore de pastas padrão da empresa, a planilha mestre `.xlsx` com as fórmulas e
+os `.txt` de guia/checklist. Acesse em **`/novo-edital`**.
+
 > ⚠️ O New Horizon é uma ferramenta de apoio e **não constitui consultoria jurídica ou financeira**.
 
 ## Stack
@@ -46,9 +51,24 @@ Navegador ── React (features) ──► /api/*  (Route Handlers do Next, moc
 ```
 src/
 ├── app/          # rotas e composição (sem regra de negócio)
-├── features/     # onboarding · operator-board · investor-pool
+├── features/     # onboarding · operator-board · investor-pool · local-export
 ├── shared/       # ui, lib, types (sem regra de negócio)
 └── styles/       # tokens, mixins e globals em SCSS
+```
+
+### Motor local de back-office (`/novo-edital`)
+
+Fluxo **importar → revisar → exportar**, 100% no navegador (nada vai a
+servidor). De um JSON de edital o app gera a árvore de pastas, a planilha mestre
+e os TXTs no padrão da empresa. Escrita via **File System Access API**
+(Chromium) com **fallback `.zip`** nos demais navegadores.
+
+```
+src/features/local-export/
+├── rules/          # regras puras (rateio, nome de pasta, validade, TXTs)
+├── spreadsheet/    # planilha .xlsx com fórmulas do Excel (exceljs)
+├── fs/             # árvore, escrita em disco, .zip e detecção de modo
+└── ui/             # NewEditalFlow (o fluxo da página)
 ```
 
 **Regra de dependência:** `app → features → shared`. Uma feature **nunca** importa de outra. Código usado por duas features sobe para `shared`.
@@ -82,7 +102,8 @@ npm run dev        # http://localhost:3000
 ## Roadmap
 
 - [x] Esqueleto, design tokens, onboarding, Kanban do operador (mover com regras)
-- [ ] **Fase 1:** drag-and-drop acessível (`dnd-kit`), tradutor de editais com LLM e guardrails, persistência
+- [x] **Motor local de back-office** (`/novo-edital`): pastas + planilha mestre + TXTs, no navegador
+- [ ] **Fase 1:** parser de edital para o fluxo local, drag-and-drop acessível (`dnd-kit`), tradutor de editais com LLM e guardrails, persistência
 - [ ] **Fase 2:** radar com alertas; gamificação baseada em progresso real
 - [ ] **Fase 3:** rankings de órgãos e transparência de pregões (depende da qualidade dos dados do PNCP)
 - [ ] **Fase 4:** marketplace operador/investidor *(depende de parecer regulatório)*
