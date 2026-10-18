@@ -15,7 +15,7 @@ import ExcelJS from 'exceljs';
 import type { EditalItem, EditalParsed, ProponentCompany } from '@/shared/types/edital';
 
 import { suggestNumeroSegment } from '../rules/folderName';
-import { resolveItemQuantity } from '../rules/quantity';
+import { resolveItemQuantity } from '@/shared/lib/quantity';
 
 export const DEFAULT_MARKUP = 0.3;
 

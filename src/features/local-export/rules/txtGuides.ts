@@ -7,7 +7,7 @@
 // checklist de habilitação). Em caso de divergência, vale o edital do certame.
 import type { EditalParsed } from '@/shared/types/edital';
 
-import { resolveItemQuantity } from './quantity';
+import { resolveItemQuantity } from '@/shared/lib/quantity';
 
 export const DOCUMENTOS_NECESSARIOS_FILENAME = '00 - DOCUMENTOS NECESSÁRIOS.txt';
 export const GUIA_DOCUMENTOS_FILENAME = '00 - GUIA DOS DOCUMENTOS.txt';

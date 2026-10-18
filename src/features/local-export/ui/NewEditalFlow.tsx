@@ -13,7 +13,7 @@ import {
   suggestOrgaoSegment,
   suggestTipoSegment,
 } from '../rules/folderName';
-import { resolveItemQuantity } from '../rules/quantity';
+import { resolveItemQuantity } from '@/shared/lib/quantity';
 import { DEFAULT_MARKUP, buildWorkbook } from '../spreadsheet/generateWorkbook';
 import styles from './NewEditalFlow.module.scss';
 
