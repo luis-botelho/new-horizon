@@ -8,17 +8,17 @@
 - [ ] Cadastro de empresas (CRUD) + upload de timbre
 
 ### P1 — análise do edital
-- [ ] Upload PDF + `pdf.js` (client-side)
-- [ ] Parser genérico (regex/heurística) → `EditalParsed`
-- [ ] Tela de revisão editável dos itens/metadados
+- [x] Upload PDF + `pdf.js` (client-side) — `src/features/edital-parser/`
+- [x] Parser genérico (regex/heurística) → `EditalParsed`
+- [x] Tela de revisão (metadados editáveis; itens em tabela somente leitura)
 - [ ] Salvar `editais` + `edital_itens`
 
 ### P2 — geração local
-- [ ] Seletor de pasta destino (File System Access API)
-- [ ] Criar árvore no padrão MAIÚSCULO
-- [ ] Gerar planilha `.xlsx` (exceljs) com itens+qtd
-- [ ] Gerar TXT documentos + guia + LEIA-ME
-- [ ] Checklist com status e alerta de validade
+- [x] Seletor de pasta destino (File System Access API + fallback `.zip`)
+- [x] Criar árvore no padrão MAIÚSCULO
+- [x] Gerar planilha `.xlsx` (exceljs) com itens+qtd
+- [x] Gerar TXT documentos + guia + LEIA-ME
+- [ ] Checklist com status e alerta de validade (parcial: validade já sai no nome do arquivo)
 
 ### P3 — anexos
 - [ ] Extrair templates de anexos do PDF

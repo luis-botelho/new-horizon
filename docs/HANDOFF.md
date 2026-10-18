@@ -7,7 +7,11 @@
 ## O que foi entregue
 
 Fluxo `importar → revisar → exportar` em `/novo-edital`, rodando 100% no
-navegador. De um JSON de edital (contrato `EditalParsed`) o app gera:
+navegador. A importação lê o **PDF assinado do edital** (pdfjs-dist roda no
+navegador e um parser puro de texto extrai meta e itens) ou aceita um JSON
+pronto (contrato `EditalParsed`). A revisão é um form editável da meta — o
+parser pode deixar campos parciais, o humano completa — e na validação final o
+app gera:
 
 1. a **árvore de pastas** no padrão da empresa (`04_ESTRUTURA_PASTAS.md`);
 2. a **planilha mestre** `.xlsx` com as fórmulas do `gerar.py` (`05_LAYOUT_PLANILHA.md`);
@@ -31,9 +35,19 @@ src/features/local-export/
 │   ├── zipFallback.ts    # .zip via jszip
 │   └── capabilities.ts   # detecta o modo (SSR-safe)
 └── ui/NewEditalFlow.tsx  # o fluxo importar→revisar→exportar
+                          # (form editável da meta; export valida com Zod)
+
+src/features/edital-parser/     # leitura de PDF → meta+itens (sem regra da outra feature)
+├── text/                       # parser puro: limpeza, parseMeta, parseItens + fixtures
+├── pdf/extractPdfText.ts       # pdfjs-dist no navegador (worker empacotado, sem CDN)
+└── ui/PdfImportSlot.tsx        # botão "Ler PDF do edital" do passo 1
+
+src/shared/data/companiesSeed.ts  # seed saneado de empresas p/ importar por PDF
 ```
 
-`src/app/novo-edital/page.tsx` só compõe (regra de negócio nunca fica em `app/`).
+`src/app/novo-edital/NovoEditalClient.tsx` compõe as duas features (o único
+lugar que pode cruzá-las) e `page.tsx` só roteia. Regra de negócio nunca fica
+em `app/`.
 
 ## Regras de domínio (não quebre)
 
@@ -41,6 +55,9 @@ src/features/local-export/
   nunca da célula `qt_celula`. Bug real: célula `"3.951"` lida como decimal,
   rateio somava 3951. Ver `resolveItemQuantity` e a fixture em
   `src/shared/types/__fixtures__/editalSample.ts` (item 3).
+- **Empresas não vêm do PDF**: na importação por PDF o adapter (só em `app/`)
+  injeta o seed saneado `COMPANIES_SEED`; a primeira aba é `Proposta` e as
+  demais `Readequada {apelido}` (ver `10_MODUS_OPERANDI.md`).
 - **Fórmulas** da planilha são gravadas como fórmulas do Excel (o usuário edita
   e recalcula): `PR UNIT×QT`, `MIN(...)`, `ROUND(CUSTO×(1+MARKUP),2)`.
 - **Markup** default `0.30` (30%), configurável na UI.
@@ -51,7 +68,7 @@ src/features/local-export/
 
 ```bash
 npm run typecheck   # tsc --noEmit
-npm test            # Vitest — 78 testes
+npm test            # Vitest — 113 testes
 npm run build       # garante que a UI/SCSS compilam
 ```
 
@@ -68,7 +85,7 @@ npm run build       # garante que a UI/SCSS compilam
 
 ## Próximos passos (não implementados)
 
-- Parser de PDF → JSON (o contrato já existe; hoje o JSON vem de fora).
+- Itens da revisão hoje são só leitura (tabela): editar item a item na UI.
 - Sync/backup no Supabase (`07_SCHEMA_SUPABASE.sql` está pronto, sem uso).
 - Anexos `.docx` na subpasta `4- ANEXOS/` (hoje só a pasta é criada).
 - Confere se o guia bate com os arquivos reais da pasta (`documentExpiry.ts`
