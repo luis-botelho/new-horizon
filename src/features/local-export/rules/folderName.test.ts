@@ -5,6 +5,7 @@ import {
   sanitizeFolderSegment,
   suggestNumeroSegment,
   suggestOrgaoSegment,
+  suggestRootFolderName,
   suggestTipoSegment,
 } from './folderName';
 
@@ -75,5 +76,25 @@ describe('sugestões', () => {
     expect(suggestTipoSegment('Cama, mesa e banho')).toBe('CAMA MESA E');
     expect(suggestTipoSegment('Enxoval')).toBe('ENXOVAL');
     expect(suggestTipoSegment('   ')).toBe('');
+  });
+});
+
+describe('suggestRootFolderName', () => {
+  it('monta a raiz a partir da meta completa (prefere pncp sobre pregão)', () => {
+    const name = suggestRootFolderName({
+      pregao: '90.070/2026',
+      pncp: '00000000000000009000702026',
+      orgao: 'Prefeitura Municipal de Angra dos Reis',
+      objeto: 'Aquisição de materiais de limpeza',
+    });
+    expect(name).toBe('00000000000000009000702026 - PREFEITURA - AQUISICAO DE MATERIAIS');
+  });
+
+  it('meta parcial do PDF usa o que existe (só pregão)', () => {
+    expect(suggestRootFolderName({ pregao: '90.070/2026' })).toBe('900702026');
+  });
+
+  it('meta vazia devolve string vazia em vez de lançar', () => {
+    expect(suggestRootFolderName({})).toBe('');
   });
 });

@@ -1,31 +1,48 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
-import { editalParsedSchema, type EditalParsed } from '@/shared/types/edital';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+  type ReactNode,
+} from 'react';
+import {
+  editalParsedSchema,
+  type EditalDraft,
+  type EditalItem,
+  type ProponentCompany,
+} from '@/shared/types/edital';
 import { Button } from '@/shared/ui/Button';
 import { detectExportMode, type ExportMode } from '../fs/capabilities';
 import { buildExportTree } from '../fs/tree';
 import { writeTreeToDirectory } from '../fs/writeDirectory';
 import { buildZipBlob } from '../fs/zipFallback';
-import {
-  buildRootFolderName,
-  suggestNumeroSegment,
-  suggestOrgaoSegment,
-  suggestTipoSegment,
-} from '../rules/folderName';
+import { suggestRootFolderName } from '../rules/folderName';
+import { formToMeta, metaToForm, patchForm, type MetaForm } from '../rules/draftForm';
 import { resolveItemQuantity } from '@/shared/lib/quantity';
 import { DEFAULT_MARKUP, buildWorkbook } from '../spreadsheet/generateWorkbook';
 import styles from './NewEditalFlow.module.scss';
 
 type Status = 'idle' | 'exporting' | 'done' | 'error';
 
-function suggestRootFolderName(parsed: EditalParsed): string {
-  const meta = parsed.edital;
-  return buildRootFolderName({
-    numero: suggestNumeroSegment(meta.pncp || meta.pregao),
-    orgao: suggestOrgaoSegment(meta.orgao),
-    tipo: suggestTipoSegment(meta.objeto),
-  });
+/** Rascunho em revisão: meta já formatada como form + dados do contrato. */
+interface ReviewDraft {
+  form: MetaForm;
+  empresas: ProponentCompany[];
+  itens: EditalItem[];
+  /** Avisos da origem (parser do PDF, leitura do JSON) exibidos na revisão. */
+  issues: string[];
+}
+
+export interface ImportSlotProps {
+  onImport: (draft: EditalDraft) => void;
+}
+
+export interface NewEditalFlowProps {
+  /** Slot acima do JSON no passo 1 — ex.: leitura de PDF (feature edital-parser). */
+  renderImportSlot?: (props: ImportSlotProps) => ReactNode;
 }
 
 function downloadBlob(blob: Blob, filename: string): void {
@@ -37,10 +54,11 @@ function downloadBlob(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function NewEditalFlow() {
+export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
   const [jsonText, setJsonText] = useState('');
   const [importIssues, setImportIssues] = useState<string[]>([]);
-  const [parsed, setParsed] = useState<EditalParsed | null>(null);
+  const [draft, setDraft] = useState<ReviewDraft | null>(null);
+  const [exportIssues, setExportIssues] = useState<string[]>([]);
   const [rootFolderName, setRootFolderName] = useState('');
   const [markup, setMarkup] = useState(DEFAULT_MARKUP);
   const [status, setStatus] = useState<Status>('idle');
@@ -54,11 +72,23 @@ export function NewEditalFlow() {
 
   const divergingItems = useMemo(
     () =>
-      (parsed?.itens ?? [])
+      (draft?.itens ?? [])
         .filter((item) => resolveItemQuantity(item).divergence)
         .map((item) => item.item),
-    [parsed],
+    [draft],
   );
+
+  const applyDraft = (incoming: EditalDraft): void => {
+    setDraft({
+      form: metaToForm(incoming.meta),
+      empresas: incoming.empresas,
+      itens: incoming.itens,
+      issues: incoming.issues,
+    });
+    setExportIssues([]);
+    const suggested = suggestRootFolderName(incoming.meta);
+    if (suggested) setRootFolderName(suggested);
+  };
 
   const importJson = (raw: string): void => {
     setJsonText(raw);
@@ -66,14 +96,18 @@ export function NewEditalFlow() {
     try {
       const result = editalParsedSchema.safeParse(JSON.parse(raw));
       if (!result.success) {
-        setParsed(null);
+        setDraft(null);
         setImportIssues(result.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`));
         return;
       }
-      setParsed(result.data);
-      setRootFolderName(suggestRootFolderName(result.data));
+      applyDraft({
+        meta: result.data.edital,
+        empresas: result.data.empresas,
+        itens: result.data.itens,
+        issues: [],
+      });
     } catch (error) {
-      setParsed(null);
+      setDraft(null);
       setImportIssues([error instanceof Error ? error.message : 'JSON inválido']);
     }
   };
@@ -89,8 +123,30 @@ export function NewEditalFlow() {
     importJson(jsonText);
   };
 
+  const updateForm = (key: keyof MetaForm, value: string): void => {
+    setExportIssues([]);
+    setDraft((current) => (current ? { ...current, form: patchForm(current.form, key, value) } : current));
+  };
+
   const handleExport = async (): Promise<void> => {
-    if (!parsed) return;
+    if (!draft) return;
+    // A revisão só vira contrato validado aqui: o Zod decide se pode exportar.
+    const validation = editalParsedSchema.safeParse({
+      edital: formToMeta(draft.form),
+      empresas: draft.empresas,
+      itens: draft.itens,
+    });
+    if (!validation.success) {
+      setExportIssues(validation.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`));
+      return;
+    }
+    if (!rootFolderName.trim()) {
+      setExportIssues(['Informe o nome da pasta raiz.']);
+      return;
+    }
+    setExportIssues([]);
+    const parsed = validation.data;
+
     setStatus('exporting');
     setStatusMessage('');
 
@@ -122,13 +178,19 @@ export function NewEditalFlow() {
     }
   };
 
+  const hasSlot = renderImportSlot !== undefined;
+
   return (
     <div className={styles.flow}>
       <section className={styles.step} aria-labelledby="passo-importar">
-        <h2 id="passo-importar">1. Importe o edital (JSON)</h2>
+        <h2 id="passo-importar">1. Importe o edital</h2>
         <p className={styles.hint}>
-          Cole o JSON do edital ou escolha um arquivo. Nada sai do seu navegador.
+          {hasSlot
+            ? 'Leia o PDF do edital ou cole o JSON pronto — a leitura acontece só no seu navegador.'
+            : 'Cole o JSON do edital ou escolha um arquivo. Nada sai do seu navegador.'}
         </p>
+        {renderImportSlot?.({ onImport: applyDraft })}
+        {hasSlot && <h3 className={styles.subheading}>Ou cole o JSON</h3>}
         <form onSubmit={handleImport} className={styles.importForm}>
           <label className={styles.fileLabel}>
             Escolher arquivo
@@ -156,38 +218,132 @@ export function NewEditalFlow() {
         )}
       </section>
 
-      {parsed && (
+      {draft && (
         <section className={styles.step} aria-labelledby="passo-revisar">
           <h2 id="passo-revisar">2. Revise</h2>
-          <dl className={styles.summary}>
-            <div>
-              <dt>Pregão</dt>
-              <dd>
-                {parsed.edital.pregao}
-                {parsed.edital.pncp && ` · PNCP ${parsed.edital.pncp}`}
-              </dd>
+          <p className={styles.hint}>
+            {draft.empresas.map((empresa) => `${empresa.apelido} (${empresa.porta})`).join(', ')} ·{' '}
+            {draft.itens.length} {draft.itens.length === 1 ? 'item' : 'itens'}
+          </p>
+
+          <div className={styles.fields}>
+            <label>
+              Pregão
+              <input value={draft.form.pregao} onChange={(event) => updateForm('pregao', event.target.value)} />
+            </label>
+            <label>
+              PNCP
+              <input value={draft.form.pncp} onChange={(event) => updateForm('pncp', event.target.value)} />
+            </label>
+            <label>
+              Processo SEI
+              <input
+                value={draft.form.processo_sei}
+                onChange={(event) => updateForm('processo_sei', event.target.value)}
+              />
+            </label>
+            <label>
+              UASG
+              <input value={draft.form.uasg} onChange={(event) => updateForm('uasg', event.target.value)} />
+            </label>
+            <label>
+              Órgão
+              <input value={draft.form.orgao} onChange={(event) => updateForm('orgao', event.target.value)} />
+            </label>
+            <label>
+              Objeto
+              <input value={draft.form.objeto} onChange={(event) => updateForm('objeto', event.target.value)} />
+            </label>
+            <label>
+              Sessão
+              <input
+                type="datetime-local"
+                value={draft.form.sessao}
+                onChange={(event) => updateForm('sessao', event.target.value)}
+              />
+            </label>
+            <label>
+              Plataforma
+              <input
+                value={draft.form.plataforma}
+                onChange={(event) => updateForm('plataforma', event.target.value)}
+              />
+            </label>
+            <label>
+              Critério
+              <input value={draft.form.criterio} onChange={(event) => updateForm('criterio', event.target.value)} />
+            </label>
+            <label>
+              Modo
+              <input value={draft.form.modo} onChange={(event) => updateForm('modo', event.target.value)} />
+            </label>
+            <label>
+              Orçamento
+              <input
+                value={draft.form.orcamento}
+                onChange={(event) => updateForm('orcamento', event.target.value)}
+              />
+            </label>
+            <label>
+              Validade da proposta (dias)
+              <input
+                type="number"
+                min={1}
+                step={1}
+                value={draft.form.validade_proposta_dias}
+                onChange={(event) => updateForm('validade_proposta_dias', event.target.value)}
+              />
+            </label>
+            <label>
+              Prazo de entrega (dias)
+              <input
+                type="number"
+                min={1}
+                step={1}
+                value={draft.form.entrega_dias}
+                onChange={(event) => updateForm('entrega_dias', event.target.value)}
+              />
+            </label>
+            <label>
+              Prazo de pagamento (dias)
+              <input
+                type="number"
+                min={1}
+                step={1}
+                value={draft.form.pagamento_dias}
+                onChange={(event) => updateForm('pagamento_dias', event.target.value)}
+              />
+            </label>
+            <label>
+              Garantia (meses)
+              <input
+                type="number"
+                min={1}
+                step={1}
+                value={draft.form.garantia_meses}
+                onChange={(event) => updateForm('garantia_meses', event.target.value)}
+              />
+            </label>
+            <label>
+              Observações
+              <textarea
+                rows={3}
+                value={draft.form.observacoes}
+                onChange={(event) => updateForm('observacoes', event.target.value)}
+              />
+            </label>
+          </div>
+
+          {draft.issues.length > 0 && (
+            <div role="status" className={styles.warning}>
+              <p>O leitor sinalizou pontos para revisar:</p>
+              <ul>
+                {draft.issues.map((issue) => (
+                  <li key={issue}>{issue}</li>
+                ))}
+              </ul>
             </div>
-            <div>
-              <dt>Órgão</dt>
-              <dd>{parsed.edital.orgao}</dd>
-            </div>
-            <div>
-              <dt>Objeto</dt>
-              <dd>{parsed.edital.objeto}</dd>
-            </div>
-            <div>
-              <dt>Sessão</dt>
-              <dd>{parsed.edital.sessao.replace('T', ' às ')}</dd>
-            </div>
-            <div>
-              <dt>Empresas</dt>
-              <dd>{parsed.empresas.map((empresa) => empresa.porta).join(', ')}</dd>
-            </div>
-            <div>
-              <dt>Itens</dt>
-              <dd>{parsed.itens.length}</dd>
-            </div>
-          </dl>
+          )}
 
           {divergingItems.length > 0 && (
             <p role="status" className={styles.warning}>
@@ -208,7 +364,7 @@ export function NewEditalFlow() {
                 </tr>
               </thead>
               <tbody>
-                {parsed.itens.map((item) => {
+                {draft.itens.map((item) => {
                   const { quantity, divergence } = resolveItemQuantity(item);
                   return (
                     <tr key={item.item} className={divergence ? styles.divergent : undefined}>
@@ -250,7 +406,7 @@ export function NewEditalFlow() {
         </section>
       )}
 
-      {parsed && (
+      {draft && (
         <section className={styles.step} aria-labelledby="passo-exportar">
           <h2 id="passo-exportar">3. Exporte</h2>
           <p className={styles.hint}>
@@ -261,6 +417,16 @@ export function NewEditalFlow() {
           <Button onClick={() => void handleExport()} disabled={status === 'exporting'}>
             {status === 'exporting' ? 'Gerando…' : 'Gerar pasta e planilha'}
           </Button>
+          {exportIssues.length > 0 && (
+            <div role="alert" className={styles.issues}>
+              <p>Complete a revisão antes de exportar:</p>
+              <ul>
+                {exportIssues.map((issue) => (
+                  <li key={issue}>{issue}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <p role="status" aria-live="polite" className={styles.status}>
             {statusMessage}
           </p>

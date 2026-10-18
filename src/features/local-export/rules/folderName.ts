@@ -2,6 +2,7 @@
 //   {NUMERO}-{PREFEITURA}-{TIPO}  com separador " - ", SEMPRE MAIÚSCULO.
 // Ex.: "5522026 - PREFEITURA - CAMA MESA".
 // O app SEMPRE oferece o nome sugerido e o usuário pode editar antes de criar.
+import type { EditalMeta } from '@/shared/types/edital';
 
 /** Caracteres ilegais em nomes de arquivo/pasta no Windows. */
 const WINDOWS_ILLEGAL = /[<>:"/\\|?*]/g;
@@ -83,4 +84,16 @@ export function suggestTipoSegment(objeto: string, maxWords = 3): string {
 export function suggestOrgaoSegment(orgao: string): string {
   const firstWord = orgao.trim().split(/\s+/)[0] ?? '';
   return sanitizeFolderSegment(firstWord);
+}
+
+/**
+ * Sugestão de nome da pasta raiz a partir da meta (parcial na importação por
+ * PDF). Se não houver nada aproveitável, devolve '' — o usuário digita.
+ */
+export function suggestRootFolderName(meta: Partial<EditalMeta>): string {
+  const numero = suggestNumeroSegment(meta.pncp || meta.pregao || '');
+  const orgao = suggestOrgaoSegment(meta.orgao || '');
+  const tipo = suggestTipoSegment(meta.objeto || '');
+  if (!numero && !orgao && !tipo) return '';
+  return buildRootFolderName({ numero, orgao, tipo });
 }

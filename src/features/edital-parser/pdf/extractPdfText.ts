@@ -1,8 +1,9 @@
 // Extração de texto de PDF no navegador com pdfjs-dist.
 //
-// O worker é resolvido via `new URL(..., import.meta.url)` — o webpack (Next)
-// transforma isso num asset estático e devolve a URL pública, evitando que o
-// pacote tente baixar o worker de uma CDN externa (tudo roda local, ADR 0003).
+// Worker e fontes são resolvidos com `new URL(caminho literal, import.meta.url)`
+// — o webpack (Next) precisa ver o caminho estático para transformar isso num
+// asset e devolver a URL pública; assim nada é baixado de CDN externa (ADR 0003).
+// Um wrapper com o caminho como argumento dinâmico quebra essa análise.
 //
 // Usa o build "legacy": ele polyfilla APIs de plataforma (ex.: Uint8Array.toHex)
 // e é o mesmo caminho exercitado fora do navegador (Node/vitest).
@@ -33,16 +34,18 @@ function pageText(content: PdfTextContent): string {
 /** Lê todas as páginas e devolve o texto completo (páginas separadas por \n). */
 export async function extractPdfText(data: ArrayBuffer): Promise<string> {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  const assetBase = (path: string) => new URL(path, import.meta.url).toString();
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-    pdfjs.GlobalWorkerOptions.workerSrc = assetBase(
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
-    );
+      import.meta.url,
+    ).toString();
   }
   const task = pdfjs.getDocument({
     data: new Uint8Array(data),
-    // Fontes dos PDFs que não embutem fonte (evita aviso do pdf.js).
-    standardFontDataUrl: assetBase('pdfjs-dist/standard_fonts/'),
+    // `standardFontDataUrl` fica de fora de propósito: é um diretório e o
+    // webpack só emite assets de `new URL` com arquivo. Sem ele o pdf.js avisa
+    // no console para PDFs com fonte padrão não embutida, mas a extração de
+    // texto funciona igual (validada com o PDF real do edital).
   });
   try {
     const doc = await task.promise;

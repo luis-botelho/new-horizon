@@ -130,3 +130,15 @@ export type EditalMeta = z.infer<typeof editalMetaSchema>;
 export type ProponentCompany = z.infer<typeof proponentCompanySchema>;
 export type EditalItem = z.infer<typeof editalItemSchema>;
 export type EditalParsed = z.infer<typeof editalParsedSchema>;
+
+/**
+ * Rascunho da etapa de revisão: meta possivelmente parcial (PDF) ou completa
+ * (JSON), com empresas e itens, mais os avisos da origem para o humano ler.
+ * Válido contra `editalParsedSchema` só no export — antes disso é para revisar.
+ */
+export interface EditalDraft {
+  meta: Partial<EditalMeta>;
+  empresas: ProponentCompany[];
+  itens: EditalItem[];
+  issues: string[];
+}
