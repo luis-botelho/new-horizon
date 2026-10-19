@@ -2,7 +2,8 @@
 // serem editáveis sem brigar com `exactOptionalPropertyTypes` (campo numérico
 // vazio é `''`, nunca `undefined`). Na validação do export o form volta a virar
 // objeto de contrato e o Zod faz a checagem de verdade.
-import type { EditalMeta } from '@/shared/types/edital';
+import { resolveItemQuantity } from '@/shared/lib/quantity';
+import type { EditalItem, EditalMeta } from '@/shared/types/edital';
 
 /** Todos os campos da meta como string — é o que os inputs de texto devolvem. */
 export type MetaForm = { [K in keyof EditalMeta]: string };
@@ -69,4 +70,99 @@ export function formToMeta(form: MetaForm): EditalMeta {
     garantia_meses: toNumber(form.garantia_meses),
     observacoes: form.observacoes,
   };
+}
+
+/** Item do edital como form de strings; `divergencia` é derivada na conversão. */
+export interface ItemForm {
+  item: string;
+  qt: string;
+  qt_celula: string;
+  unid: string;
+  grupo: string;
+  qtd_sdsp: string;
+  qtd_spdc: string;
+  qtd_outras: string;
+  descricao: string;
+}
+
+/** Item do contrato (parser/JSON) → form editável. */
+export function itemToForm(item: EditalItem): ItemForm {
+  return {
+    item: String(item.item),
+    qt: String(item.qt),
+    qt_celula: String(item.qt_celula),
+    unid: item.unid,
+    grupo: item.grupo,
+    qtd_sdsp: String(item.qtd_sdsp),
+    qtd_spdc: String(item.qtd_spdc),
+    qtd_outras: String(item.qtd_outras),
+    descricao: item.descricao,
+  };
+}
+
+/**
+ * Form → item candidato ao `editalParsedSchema`, aplicando a regra de ouro:
+ * `qt` vem da soma do rateio quando existe; sem rateio, do valor original.
+ * `divergencia` é sempre recalculada — nunca se confia na flag vinda do form.
+ */
+export function itemFormToItem(form: ItemForm): EditalItem {
+  const base: EditalItem = {
+    item: toNumber(form.item),
+    qt: 0,
+    qt_celula: toNumber(form.qt_celula),
+    unid: form.unid,
+    grupo: form.grupo,
+    qtd_sdsp: toNumber(form.qtd_sdsp),
+    qtd_spdc: toNumber(form.qtd_spdc),
+    qtd_outras: toNumber(form.qtd_outras),
+    divergencia: false,
+    descricao: form.descricao,
+  };
+  const resolved = resolveItemQuantity({ ...base, qt: toNumber(form.qt) });
+  return { ...base, qt: resolved.quantity, divergencia: resolved.divergence };
+}
+
+const RATEIO_KEYS: ReadonlySet<string> = new Set(['qtd_sdsp', 'qtd_spdc', 'qtd_outras']);
+
+/** Um campo de um item alterado. Rateio editado reconcilia célula e qt. */
+export function patchItemForm<K extends keyof ItemForm>(
+  items: ItemForm[],
+  index: number,
+  key: K,
+  value: string,
+): ItemForm[] {
+  return items.map((form, position) => {
+    if (position !== index) return form;
+    const next: ItemForm = { ...form };
+    next[key] = value;
+    if (RATEIO_KEYS.has(key)) {
+      // O humano mexeu no rateio: a célula passa a valer a soma nova e o
+      // aviso de divergência some — ele já conferiu.
+      const sum = toNumber(next.qtd_sdsp) + toNumber(next.qtd_spdc) + toNumber(next.qtd_outras);
+      next.qt = String(sum);
+      next.qt_celula = String(sum);
+    }
+    return next;
+  });
+}
+
+/** Linha nova em branco: números vazios (o Zod aponta o que falta no export). */
+export function emptyItemForm(itemNumber: number): ItemForm {
+  return {
+    item: String(itemNumber),
+    qt: '',
+    qt_celula: '',
+    unid: '',
+    grupo: '',
+    qtd_sdsp: '',
+    qtd_spdc: '',
+    qtd_outras: '',
+    descricao: '',
+  };
+}
+
+/** Próximo número de item: maior número atual + 1 (ou 1 se não houver). */
+export function nextItemNumber(items: ItemForm[]): number {
+  const numbers = items.map((form) => toNumber(form.item));
+  return numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
 }

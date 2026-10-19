@@ -9,8 +9,9 @@
 Fluxo `importar → revisar → exportar` em `/novo-edital`, rodando 100% no
 navegador. A importação lê o **PDF assinado do edital** (pdfjs-dist roda no
 navegador e um parser puro de texto extrai meta e itens) ou aceita um JSON
-pronto (contrato `EditalParsed`). A revisão é um form editável da meta — o
-parser pode deixar campos parciais, o humano completa — e na validação final o
+pronto (contrato `EditalParsed`). A revisão é um form editável da meta e dos
+itens — o parser pode deixar campos parciais ou trazer divergência de rateio,
+o humano reconcilia (editar o rateio zera o aviso) — e na validação final o
 app gera:
 
 1. a **árvore de pastas** no padrão da empresa (`04_ESTRUTURA_PASTAS.md`);
@@ -35,7 +36,7 @@ src/features/local-export/
 │   ├── zipFallback.ts    # .zip via jszip
 │   └── capabilities.ts   # detecta o modo (SSR-safe)
 └── ui/NewEditalFlow.tsx  # o fluxo importar→revisar→exportar
-                          # (form editável da meta; export valida com Zod)
+                          # (forms editáveis de meta e itens; export valida c/ Zod)
 
 src/features/edital-parser/     # leitura de PDF → meta+itens (sem regra da outra feature)
 ├── text/                       # parser puro: limpeza, parseMeta, parseItens + fixtures
@@ -68,7 +69,7 @@ em `app/`.
 
 ```bash
 npm run typecheck   # tsc --noEmit
-npm test            # Vitest — 113 testes
+npm test            # Vitest — 120 testes
 npm run build       # garante que a UI/SCSS compilam
 ```
 
@@ -85,7 +86,6 @@ npm run build       # garante que a UI/SCSS compilam
 
 ## Próximos passos (não implementados)
 
-- Itens da revisão hoje são só leitura (tabela): editar item a item na UI.
 - Sync/backup no Supabase (`07_SCHEMA_SUPABASE.sql` está pronto, sem uso).
 - Anexos `.docx` na subpasta `4- ANEXOS/` (hoje só a pasta é criada).
 - Confere se o guia bate com os arquivos reais da pasta (`documentExpiry.ts`

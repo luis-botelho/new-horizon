@@ -10,7 +10,7 @@
 ### P1 — análise do edital
 - [x] Upload PDF + `pdf.js` (client-side) — `src/features/edital-parser/`
 - [x] Parser genérico (regex/heurística) → `EditalParsed`
-- [x] Tela de revisão (metadados editáveis; itens em tabela somente leitura)
+- [x] Tela de revisão editável (metadados + itens, com excluir/adicionar linha)
 - [ ] Salvar `editais` + `edital_itens`
 
 ### P2 — geração local

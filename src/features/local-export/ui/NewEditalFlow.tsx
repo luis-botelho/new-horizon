@@ -11,7 +11,6 @@ import {
 import {
   editalParsedSchema,
   type EditalDraft,
-  type EditalItem,
   type ProponentCompany,
 } from '@/shared/types/edital';
 import { Button } from '@/shared/ui/Button';
@@ -20,18 +19,29 @@ import { buildExportTree } from '../fs/tree';
 import { writeTreeToDirectory } from '../fs/writeDirectory';
 import { buildZipBlob } from '../fs/zipFallback';
 import { suggestRootFolderName } from '../rules/folderName';
-import { formToMeta, metaToForm, patchForm, type MetaForm } from '../rules/draftForm';
+import {
+  emptyItemForm,
+  formToMeta,
+  itemFormToItem,
+  itemToForm,
+  metaToForm,
+  nextItemNumber,
+  patchForm,
+  patchItemForm,
+  type ItemForm,
+  type MetaForm,
+} from '../rules/draftForm';
 import { resolveItemQuantity } from '@/shared/lib/quantity';
 import { DEFAULT_MARKUP, buildWorkbook } from '../spreadsheet/generateWorkbook';
 import styles from './NewEditalFlow.module.scss';
 
 type Status = 'idle' | 'exporting' | 'done' | 'error';
 
-/** Rascunho em revisão: meta já formatada como form + dados do contrato. */
+/** Rascunho em revisão: meta e itens formatados como form + empresas. */
 interface ReviewDraft {
   form: MetaForm;
   empresas: ProponentCompany[];
-  itens: EditalItem[];
+  itens: ItemForm[];
   /** Avisos da origem (parser do PDF, leitura do JSON) exibidos na revisão. */
   issues: string[];
 }
@@ -73,6 +83,7 @@ export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
   const divergingItems = useMemo(
     () =>
       (draft?.itens ?? [])
+        .map(itemFormToItem)
         .filter((item) => resolveItemQuantity(item).divergence)
         .map((item) => item.item),
     [draft],
@@ -82,7 +93,7 @@ export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
     setDraft({
       form: metaToForm(incoming.meta),
       empresas: incoming.empresas,
-      itens: incoming.itens,
+      itens: incoming.itens.map(itemToForm),
       issues: incoming.issues,
     });
     setExportIssues([]);
@@ -128,13 +139,35 @@ export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
     setDraft((current) => (current ? { ...current, form: patchForm(current.form, key, value) } : current));
   };
 
+  const updateItem = (index: number, key: keyof ItemForm, value: string): void => {
+    setExportIssues([]);
+    setDraft((current) =>
+      current ? { ...current, itens: patchItemForm(current.itens, index, key, value) } : current,
+    );
+  };
+
+  const removeItem = (index: number): void => {
+    setExportIssues([]);
+    setDraft((current) =>
+      current ? { ...current, itens: current.itens.filter((_, position) => position !== index) } : current,
+    );
+  };
+
+  const addItem = (): void => {
+    setDraft((current) =>
+      current
+        ? { ...current, itens: [...current.itens, emptyItemForm(nextItemNumber(current.itens))] }
+        : current,
+    );
+  };
+
   const handleExport = async (): Promise<void> => {
     if (!draft) return;
     // A revisão só vira contrato validado aqui: o Zod decide se pode exportar.
     const validation = editalParsedSchema.safeParse({
       edital: formToMeta(draft.form),
       empresas: draft.empresas,
-      itens: draft.itens,
+      itens: draft.itens.map(itemFormToItem),
     });
     if (!validation.success) {
       setExportIssues(validation.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`));
@@ -360,20 +393,85 @@ export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
                   <th scope="col">QT</th>
                   <th scope="col">Unid.</th>
                   <th scope="col">Descrição</th>
-                  <th scope="col">Rateio (SDSP/SPDC/Outras)</th>
+                  <th scope="col">Rateio (SDSP / SPDC / Outras)</th>
+                  <th scope="col">
+                    <span className={styles.visuallyHidden}>Ações</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {draft.itens.map((item) => {
-                  const { quantity, divergence } = resolveItemQuantity(item);
+                {draft.itens.map((itemForm, index) => {
+                  const { quantity, divergence } = resolveItemQuantity(itemFormToItem(itemForm));
+                  const rowLabel = `item ${itemForm.item || index + 1}`;
                   return (
-                    <tr key={item.item} className={divergence ? styles.divergent : undefined}>
-                      <td>{item.item}</td>
-                      <td>{quantity}</td>
-                      <td>{item.unid}</td>
-                      <td className={styles.description}>{item.descricao}</td>
+                    <tr key={index} className={divergence ? styles.divergent : undefined}>
                       <td>
-                        {item.qtd_sdsp} / {item.qtd_spdc} / {item.qtd_outras}
+                        <input
+                          className={styles.cellInput}
+                          type="number"
+                          min={1}
+                          step={1}
+                          value={itemForm.item}
+                          onChange={(event) => updateItem(index, 'item', event.target.value)}
+                          aria-label={`Número do ${rowLabel}`}
+                        />
+                      </td>
+                      <td>{quantity}</td>
+                      <td>
+                        <input
+                          className={styles.cellInput}
+                          value={itemForm.unid}
+                          onChange={(event) => updateItem(index, 'unid', event.target.value)}
+                          aria-label={`Unidade do ${rowLabel}`}
+                        />
+                      </td>
+                      <td className={styles.description}>
+                        <input
+                          className={styles.cellInput}
+                          value={itemForm.descricao}
+                          onChange={(event) => updateItem(index, 'descricao', event.target.value)}
+                          aria-label={`Descrição do ${rowLabel}`}
+                        />
+                      </td>
+                      <td>
+                        <div className={styles.rateioInputs}>
+                          <input
+                            className={styles.cellInput}
+                            type="number"
+                            min={0}
+                            step="any"
+                            value={itemForm.qtd_sdsp}
+                            onChange={(event) => updateItem(index, 'qtd_sdsp', event.target.value)}
+                            aria-label={`Quantidade SDSP do ${rowLabel}`}
+                          />
+                          <input
+                            className={styles.cellInput}
+                            type="number"
+                            min={0}
+                            step="any"
+                            value={itemForm.qtd_spdc}
+                            onChange={(event) => updateItem(index, 'qtd_spdc', event.target.value)}
+                            aria-label={`Quantidade SPDC do ${rowLabel}`}
+                          />
+                          <input
+                            className={styles.cellInput}
+                            type="number"
+                            min={0}
+                            step="any"
+                            value={itemForm.qtd_outras}
+                            onChange={(event) => updateItem(index, 'qtd_outras', event.target.value)}
+                            aria-label={`Quantidade outras do ${rowLabel}`}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <Button
+                          variant="ghost"
+                          onClick={() => removeItem(index)}
+                          aria-label={`Excluir o ${rowLabel}`}
+                        >
+                          Excluir
+                        </Button>
                       </td>
                     </tr>
                   );
@@ -381,6 +479,9 @@ export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
               </tbody>
             </table>
           </div>
+          <Button variant="ghost" onClick={addItem}>
+            Adicionar item
+          </Button>
 
           <div className={styles.fields}>
             <label>

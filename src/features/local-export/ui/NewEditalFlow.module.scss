@@ -109,6 +109,31 @@
   max-width: 28rem;
 }
 
+.visuallyHidden {
+  @include visually-hidden;
+}
+
+.cellInput {
+  font: inherit;
+  font-size: 0.875rem;
+  color: inherit;
+  width: 100%;
+  padding: var(--nh-space-1);
+  border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius-sm);
+  background: var(--nh-surface);
+}
+
+.rateioInputs {
+  display: flex;
+  gap: var(--nh-space-1);
+
+  .cellInput {
+    min-width: 4rem;
+    width: 4.5rem;
+  }
+}
+
 .fields {
   display: flex;
   flex-wrap: wrap;
