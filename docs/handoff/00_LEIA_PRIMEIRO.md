@@ -1,5 +1,17 @@
 # 00 — LEIA PRIMEIRO
 
+> **🔒 Continuando o código?** Não leia o repo inteiro: o estado real da
+> implementação está em [`docs/HANDOFF.md`](../HANDOFF.md) — o que já existe,
+> mapa do código, regras que não quebram, comandos de verificação e os
+> **próximos passos**. Convenções e pré-PR em
+> [`CONTRIBUTING.md`](../../CONTRIBUTING.md); decisões arquiteturais em
+> [`docs/adr/`](../adr/). O ponto de partida de quem entra agora é a seção
+> "Próximos passos" do HANDOFF.
+>
+> Atenção: este pacote abaixo é o **planejamento original** (Vite + Tailwind +
+> Supabase). O que está implementado hoje é **Next.js 15 + SCSS Modules +
+> Zod + Vitest**, sem backend — ver [`README.md`](../../README.md).
+
 Pacote de handoff do projeto **APP DE LICITAÇÃO (SaaS)** — MVP 01.
 
 Este pacote nasceu da engenharia reversa do processo de licitação da empresa
