@@ -4,6 +4,7 @@ import { Bricolage_Grotesque, Public_Sans } from 'next/font/google';
 import type { PropsWithChildren } from 'react';
 import { env } from '@/shared/lib/env';
 import { Providers } from './providers';
+import { TranslatorGlobal } from '@/shared/ui/TranslatorGlobal';
 import '@/styles/globals.scss';
 import styles from './layout.module.scss';
 
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <main className={styles.main}>
           <Providers>{children}</Providers>
         </main>
+        <TranslatorGlobal />
       </body>
     </html>
   );
