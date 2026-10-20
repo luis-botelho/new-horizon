@@ -17,6 +17,10 @@
   }
 }
 
+.over {
+  box-shadow: inset 0 0 0 2px var(--nh-brand);
+}
+
 .count {
   font-size: 0.875rem;
   color: var(--nh-content-muted);

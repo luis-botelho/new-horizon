@@ -91,7 +91,8 @@ npm run build       # garante que a UI/SCSS compilam
 - **Conferência guia × arquivos**: catálogo unificado (`documentCatalog.ts`),
   auditoria heurística normalizada (`audit.ts`) e UI (`DocumentAudit`) no
   fluxo (passo 4) — lê só nomes, nada envia. Testes: audit e validade OK.
-- dnd-kit no Kanban e tradutor de editais com LLM (ver roadmap).
+- **Kanban com dnd-kit**: DnDContext + Sortable + Droppable no board (drag entre colunas, overlay, sensores pointer/touch). Atualiza texto de vazio. Próximo: tradutor de editais com LLM (roadmap).
+- Tradutor de editais com LLM (roadmap).
 
 ## Dados
 

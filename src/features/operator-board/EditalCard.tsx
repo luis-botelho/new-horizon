@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { TranslatedText } from '@/shared/ui/TranslatedText';
 import { formatBRL } from '@/shared/lib/format';
 import { KANBAN_STAGES, type KanbanStage } from '@/shared/types/domain';
@@ -18,6 +20,9 @@ interface EditalCardProps {
 export function EditalCard({ edital, now }: EditalCardProps) {
   const move = useMoveEdital();
   const [blocked, setBlocked] = useState<string | null>(null);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: edital.id,
+  });
 
   function handleMove(to: KanbanStage) {
     const check = canMove(edital, to);
@@ -26,11 +31,17 @@ export function EditalCard({ edital, now }: EditalCardProps) {
       return;
     }
     setBlocked(null);
-    move.mutate({ id: edital.id, to }, { onError: (e) => setBlocked(e.message) });
+    move.mutate({ id: edital.id, to }, { onError: (e) => setBlocked((e as Error).message) });
   }
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <article className={styles.card}>
+    <article ref={setNodeRef} style={style} className={styles.card} {...attributes} {...listeners}>
       <p className={styles.where}>
         {edital.orgao} · {edital.municipio}/{edital.uf}
       </p>
