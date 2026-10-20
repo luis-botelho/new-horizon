@@ -33,6 +33,7 @@ import {
 } from '../rules/draftForm';
 import { resolveItemQuantity } from '@/shared/lib/quantity';
 import { DEFAULT_MARKUP, buildWorkbook } from '../spreadsheet/generateWorkbook';
+import { DocumentAudit } from './DocumentAudit';
 import styles from './NewEditalFlow.module.scss';
 
 type Status = 'idle' | 'exporting' | 'done' | 'error';
@@ -538,6 +539,15 @@ export function NewEditalFlow({ renderImportSlot }: NewEditalFlowProps) {
           )}
         </section>
       )}
+
+      <section className={styles.step} aria-labelledby="passo-auditar">
+        <h2 id="passo-auditar">4. Conferir guia × arquivos</h2>
+        <p className={styles.hint}>
+          Bate os arquivos da pasta 3- DOCUMENTAÇÃO com o checklist do guia e alerta faltantes e
+          vencimentos. Somente nomes de arquivo são lidos — nada sai do seu navegador.
+        </p>
+        <DocumentAudit />
+      </section>
     </div>
   );
 }

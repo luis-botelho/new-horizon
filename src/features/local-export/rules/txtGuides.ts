@@ -9,6 +9,8 @@ import type { EditalParsed } from '@/shared/types/edital';
 
 import { resolveItemQuantity } from '@/shared/lib/quantity';
 
+import { DECLARACOES_EXTRAS, HABILITACAO_SECTIONS } from './documentCatalog';
+
 export const DOCUMENTOS_NECESSARIOS_FILENAME = '00 - DOCUMENTOS NECESSÁRIOS.txt';
 export const GUIA_DOCUMENTOS_FILENAME = '00 - GUIA DOS DOCUMENTOS.txt';
 export const LEIA_ME_FILENAME = 'LEIA-ME.txt';
@@ -17,79 +19,6 @@ export interface TextArtifact {
   filename: string;
   content: string;
 }
-
-interface DocumentSection {
-  code: string;
-  title: string;
-  entries: string[];
-}
-
-/** Catálogo de habilitação (seções A–E), fiel ao checklist da empresa. */
-const HABILITACAO_SECTIONS: DocumentSection[] = [
-  {
-    code: 'A',
-    title: 'HABILITAÇÃO JURÍDICA',
-    entries: [
-      'Registro comercial (se empresário individual)',
-      'Contrato Social / Estatuto em vigor, registrado, com chancela digital',
-      'Documentos de designação dos administradores (se em ato separado)',
-      'Alterações consolidadas com todas as cláusulas em vigor (se houver)',
-    ],
-  },
-  {
-    code: 'B',
-    title: 'HABILITAÇÃO ECONÔMICO-FINANCEIRA',
-    entries: [
-      'Balanço patrimonial e demonstrações dos 2 últimos exercícios, registrados na Junta Comercial',
-      'Termos de abertura e encerramento do Livro Diário',
-      'Índices calculados e demonstrados: ILG >= 1, ILC >= 1, IE <= 1 (fórmulas no guia)',
-      'Alternativa aos índices: Patrimônio Líquido >= 10% do valor estimado da contratação',
-      'Certidões negativas de falência e recuperação judicial/extrajudicial',
-      'Anexo VII - Declaração de integralidade dos custos trabalhistas',
-    ],
-  },
-  {
-    code: 'C',
-    title: 'HABILITAÇÃO FISCAL',
-    entries: [
-      'CNPJ com quadro societário atualizado',
-      'Inscrição estadual ou municipal pertinente ao objeto (quando exigida)',
-      'Certidão Conjunta Negativa de Débitos Federais (Receita Federal + PGFN)',
-      'Certidão estadual (ICMS) + Certidão da Dívida Ativa Estadual',
-      'Certidão municipal (ISS) + Dívida Ativa Municipal (e IPTU, se a sede for no município)',
-      'CRF-FGTS (Certificado de Regularidade do FGTS)',
-    ],
-  },
-  {
-    code: 'D',
-    title: 'HABILITAÇÃO SOCIAL E TRABALHISTA',
-    entries: [
-      'Declaração de não emprego de menor (item D.1 do edital)',
-      'CNDT - Certidão Negativa de Débitos Trabalhistas (ou positiva com efeito negativo)',
-      'Anexo VIII - Declaração de reserva de cargos para PCD/reabilitado',
-    ],
-  },
-  {
-    code: 'E',
-    title: 'QUALIFICAÇÃO TÉCNICA',
-    entries: [
-      'Atestado(s) de capacidade técnica compatível com o objeto, emitido por terceiro (não vale o da própria licitante)',
-    ],
-  },
-];
-
-/** Declarações complementares exigidas como anexo ou campo do sistema. */
-const DECLARACOES_EXTRAS: string[] = [
-  'Proposta de Preços (Anexo II) - com MARCA de cada item',
-  'Declaração dos itens ofertados (item 12.1.2)',
-  'Declaração de ausência de vínculo com servidores do Município (item 7.11)',
-  'Anexo V - Declaração de Responsabilização Civil e Administrativa (Lei 12.846/2013)',
-  'Anexo VI - Declaração de Inexistência de Nepotismo',
-  'Anexo VII - Declaração para fins de habilitação (art. 63, I e §1º, Lei 14.133/2021)',
-  'Anexo VIII - Declaração de cumprimento de reserva de cargos (art. 63, IV)',
-  'Anexo IX - Indicação da localização das instalações + cópia do Alvará de Funcionamento',
-  'Campos próprios do sistema: inexistência de fato impeditivo, conhecimento do regulamento e responsabilidade pela origem (item 7.3)',
-];
 
 /** "2026-11-10T09:00" → "10/11/2026 às 09:00". */
 function formatSession(iso: string): string {
@@ -130,7 +59,7 @@ export function buildDocumentosNecessariosTxt(parsed: EditalParsed): string {
   for (const section of HABILITACAO_SECTIONS) {
     lines.push(`(${section.code}) ${section.title}`);
     for (const entry of section.entries) {
-      lines.push(`- [ ] ${entry}`);
+      lines.push(`- [ ] ${entry.text}`);
     }
     lines.push('');
   }

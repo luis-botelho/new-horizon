@@ -88,8 +88,9 @@ npm run build       # garante que a UI/SCSS compilam
 
 - Sync/backup no Supabase (`07_SCHEMA_SUPABASE.sql` está pronto, sem uso).
 - Anexos `.docx` na subpasta `4- ANEXOS/` (hoje só a pasta é criada).
-- Confere se o guia bate com os arquivos reais da pasta (`documentExpiry.ts`
-  já extrai validade; falta casar guia × arquivos e alertar faltantes).
+- **Conferência guia × arquivos**: catálogo unificado (`documentCatalog.ts`),
+  auditoria heurística normalizada (`audit.ts`) e UI (`DocumentAudit`) no
+  fluxo (passo 4) — lê só nomes, nada envia. Testes: audit e validade OK.
 - dnd-kit no Kanban e tradutor de editais com LLM (ver roadmap).
 
 ## Dados

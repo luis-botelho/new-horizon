@@ -1,0 +1,111 @@
+@use 'mixins' as *;
+
+.audit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-4);
+  align-items: flex-start;
+  width: 100%;
+}
+
+.fileLabel {
+  cursor: pointer;
+  color: var(--nh-brand);
+
+  input {
+    @include visually-hidden;
+  }
+}
+
+.hint {
+  margin: 0;
+  color: var(--nh-content-muted);
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-4);
+  width: 100%;
+}
+
+.summary {
+  margin: 0;
+}
+
+.expiredText {
+  color: var(--nh-deadline-critical);
+}
+
+.expiringText {
+  color: var(--nh-deadline-warning);
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-4);
+}
+
+.section {
+  background: var(--nh-surface);
+  border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius-sm);
+  padding: var(--nh-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-2);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-weight: 600;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nh-space-2);
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--nh-space-2);
+  padding: var(--nh-space-1) var(--nh-space-2);
+  border-radius: var(--nh-radius-sm);
+  align-items: start;
+}
+
+.mark {
+  line-height: 1.5;
+}
+
+.isMissing {
+  background: color-mix(in srgb, var(--nh-deadline-critical) 8%, transparent);
+}
+
+.missingTag {
+  color: var(--nh-deadline-critical);
+  font-weight: 600;
+}
+
+.file {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.badgeExpired {
+  color: var(--nh-deadline-critical);
+  font-style: italic;
+}
+
+.badgeExpiring {
+  color: var(--nh-deadline-warning);
+  font-style: italic;
+}
