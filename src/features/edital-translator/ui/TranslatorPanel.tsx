@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import type { TranslatorConfig } from '../lib/config';
 import styles from './TranslatorPanel.module.scss';
 
@@ -11,6 +12,10 @@ interface TranslatorPanelProps {
 
 export function TranslatorPanel({ config, onChange }: TranslatorPanelProps) {
   const [open, setOpen] = useState(false);
+  const [testText, setTestText] = useState(
+    'Aquisição de material de limpeza e higiene para atendimento das necessidades da Prefeitura.',
+  );
+  const { simple, loading, error } = useAutoTranslate(config, testText);
 
   return (
     <details className={styles.panel} open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
@@ -61,6 +66,18 @@ export function TranslatorPanel({ config, onChange }: TranslatorPanelProps) {
             onChange={(e) => onChange({ systemPrompt: e.target.value })}
           />
         </label>
+        <div className={styles.test}>
+          <p className={styles.hint}>Teste rápido</p>
+          <textarea
+            rows={3}
+            value={testText}
+            onChange={(e) => setTestText(e.target.value)}
+          />
+          <p className={styles.result}>
+            {loading ? 'Traduzindo...' : simple || '(vazio)'}
+          </p>
+          {error && <p role="alert">{error}</p>}
+        </div>
       </div>
     </details>
   );
