@@ -13,3 +13,7 @@ pasta exemplo/
 !README.md
 !CHANGELOG.md
 !LICENSE.md
+
+backend/.env
+backend/node_modules
+
