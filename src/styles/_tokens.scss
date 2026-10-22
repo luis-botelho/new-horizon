@@ -1,58 +1,99 @@
-// Fonte de verdade do Design System. Componentes consomem apenas var(--nh-*).
-// Cores de prazo e risco são semânticas: nunca use hex direto em componentes.
+// Design Tokens inspirados em Jira/Linear/Notion
+// Sem valores soltos. Apenas variáveis.
 
 :root {
-  --nh-surface: #f4f7f6;
+  // Superfícies
+  --nh-bg: #f7f8f9;
+  --nh-surface: #ffffff;
   --nh-surface-raised: #ffffff;
-  --nh-border: #d3dedc;
-  --nh-content: #12262a;
-  --nh-content-muted: #4f6468;
+  --nh-surface-subtle: #f8f9fa;
 
-  --nh-brand: #0e6b73;
-  --nh-brand-contrast: #ffffff;
-  --nh-sun: #e8a317; // acento do "horizonte": usado só no medidor de prazo
+  // Bordas
+  --nh-border: #dfe1e6;
+  --nh-border-strong: #b3b9c4;
 
-  --nh-deadline-safe: #2b7a4b;
-  --nh-deadline-warning: #9a6200;
-  --nh-deadline-critical: #b3342b;
-  --nh-deadline-expired: #6b7a7d;
+  // Texto
+  --nh-text: #172b4d;
+  --nh-text-secondary: #44546f;
+  --nh-text-subtle: #626f86;
+  --nh-text-inverse: #ffffff;
 
-  --nh-risk-low: #2b7a4b;
-  --nh-risk-medium: #9a6200;
-  --nh-risk-high: #b3342b;
+  // Marca / Ação
+  --nh-brand: #0c66e4;
+  --nh-brand-hover: #0055cc;
+  --nh-brand-active: #09326c;
+  --nh-brand-subtle: rgba(12, 102, 228, 0.08);
 
-  --nh-space-1: 0.25rem;
-  --nh-space-2: 0.5rem;
-  --nh-space-3: 0.75rem;
-  --nh-space-4: 1rem;
-  --nh-space-6: 1.5rem;
-  --nh-space-8: 2rem;
+  // Semânticas
+  --nh-success: #22a06b;
+  --nh-success-subtle: #e3fcef;
+  --nh-warning: #974f0c;
+  --nh-warning-subtle: #fff7d6;
+  --nh-danger: #ae2a19;
+  --nh-danger-subtle: #ffebe6;
+  --nh-info: #0c66e4;
+  --nh-info-subtle: #e9f2ff;
 
-  --nh-radius-sm: 4px;
-  --nh-radius-md: 10px;
+  // Alerta do board
+  --nh-risk-high: #ae2a19;
 
-  --nh-font-display: var(--font-display), system-ui, sans-serif;
-  --nh-font-body: var(--font-body), system-ui, sans-serif;
+  // Prazos
+  --nh-deadline-ok: #22a06b;
+  --nh-deadline-warning: #974f0c;
+  --nh-deadline-critical: #ae2a19;
+
+  // Espaçamento (escala 4px)
+  --nh-space-1: 0.25rem; // 4px
+  --nh-space-2: 0.5rem;  // 8px
+  --nh-space-3: 0.75rem; // 12px
+  --nh-space-4: 1rem;    // 16px
+  --nh-space-5: 1.5rem;  // 24px
+  --nh-space-6: 2rem;    // 32px
+  --nh-space-7: 2.5rem;  // 40px
+  --nh-space-8: 3rem;    // 48px
+
+  // Raio (3–4px)
+  --nh-radius-xs: 3px;
+  --nh-radius-sm: 3px;
+  --nh-radius-md: 4px;
+  --nh-radius-lg: 6px;
+
+  // Tipografia
+  --nh-font-body: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  --nh-font-display: var(--font-display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  --nh-text-size-12: 0.75rem;
+  --nh-text-size-13: 0.8125rem;
+  --nh-text-size-14: 0.875rem;
+  --nh-text-size-16: 1rem;
+  --nh-text-size-20: 1.25rem;
+  --nh-text-size-24: 1.5rem;
+
+  // Sombras sutis
+  --nh-shadow-card: 0 1px 1px rgba(9, 30, 66, 0.02), 0 0 1px rgba(9, 30, 66, 0.02);
+  --nh-shadow-card-hover: 0 4px 8px -2px rgba(9, 30, 66, 0.12), 0 0 1px rgba(9, 30, 66, 0.12);
+  --nh-shadow-overlay: 0 8px 16px -4px rgba(9, 30, 66, 0.16), 0 0 1px rgba(9, 30, 66, 0.16);
+  --nh-shadow-focus: 0 0 0 2px rgba(12, 102, 228, 0.6);
+
+  // Layout
+  --nh-topbar-h: 56px;
+  --nh-sidebar-w: 240px;
+  --nh-sidebar-w-collapsed: 56px;
+  --nh-content-max: 1400px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --nh-surface: #0c1a1d;
-    --nh-surface-raised: #132629;
-    --nh-border: #264146;
-    --nh-content: #e6efee;
-    --nh-content-muted: #9ab0b3;
-
-    --nh-brand: #4cc2cc;
-    --nh-brand-contrast: #06191c;
-
-    --nh-deadline-safe: #5fc58a;
-    --nh-deadline-warning: #e8a317;
-    --nh-deadline-critical: #ff7a70;
-    --nh-deadline-expired: #8fa0a3;
-
-    --nh-risk-low: #5fc58a;
-    --nh-risk-medium: #e8a317;
-    --nh-risk-high: #ff7a70;
-  }
+[data-theme="dark"] {
+  --nh-bg: #1f1f21;
+  --nh-surface: #2c2c30;
+  --nh-surface-raised: #2c2c30;
+  --nh-surface-subtle: #242426;
+  --nh-border: #3d3d42;
+  --nh-border-strong: #6b6b6f;
+  --nh-text: #f7f8f9;
+  --nh-text-secondary: #bfbfbf;
+  --nh-text-subtle: #8f8f8f;
+  --nh-brand: #579dff;
+  --nh-brand-hover: #85b8ff;
+  --nh-brand-active: #1d7afc;
+  --nh-brand-subtle: rgba(87, 157, 255, 0.14);
+  --nh-shadow-card-hover: 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 0 1px rgba(0, 0, 0, 0.4);
 }

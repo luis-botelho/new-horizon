@@ -21,13 +21,15 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="pt-BR" className={`${display.variable} ${body.variable}`}>
       <body>
         <header className={styles.header}>
-          <Link href="/" className={styles.brand}>
-            New Horizon
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--nh-space-3)' }}>
+            <Link href="/" className={styles.brand}>
+              New Horizon
+            </Link>
+          </div>
           <nav className={styles.nav} aria-label="Principal">
             <Link href="/onboarding">Começar</Link>
             <Link href="/novo-edital">Novo edital</Link>
-            <Link href="/operador">Meus editais</Link>
+            <Link href="/operador">Quadro</Link>
             {env.investorPool && <Link href="/investidor">Investir</Link>}
           </nav>
         </header>

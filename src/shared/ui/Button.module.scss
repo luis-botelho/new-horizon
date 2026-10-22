@@ -1,31 +1,92 @@
-@use 'mixins' as *;
-
 .button {
-  font: inherit;
-  font-weight: 600;
-  padding: var(--nh-space-2) var(--nh-space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nh-space-2);
   border-radius: var(--nh-radius-sm);
   border: 1px solid transparent;
+  font-size: var(--nh-text-size-14);
+  font-weight: 500;
+  line-height: 1.4;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  white-space: nowrap;
+}
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+.sm {
+  height: 28px;
+  padding: 0 var(--nh-space-2);
+  font-size: var(--nh-text-size-13);
+}
+
+.md {
+  height: 32px;
+  padding: 0 var(--nh-space-3);
 }
 
 .primary {
   background: var(--nh-brand);
-  color: var(--nh-brand-contrast);
+  color: var(--nh-text-inverse);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--nh-brand-hover);
+}
+
+.primary:active:not(:disabled) {
+  background: var(--nh-brand-active);
+}
+
+.secondary {
+  background: var(--nh-surface);
+  color: var(--nh-text);
+  border-color: var(--nh-border);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--nh-surface-subtle);
+}
+
+.subtle {
+  background: transparent;
+  color: var(--nh-text);
+}
+
+.subtle:hover:not(:disabled) {
+  background: var(--nh-surface-subtle);
 }
 
 .ghost {
   background: transparent;
-  color: var(--nh-content);
-  border-color: var(--nh-border);
+  color: var(--nh-text-secondary);
+}
 
-  &:hover:not(:disabled) {
-    background: var(--nh-surface);
-  }
+.ghost:hover:not(:disabled) {
+  background: var(--nh-surface-subtle);
+  color: var(--nh-text);
+}
+
+.danger {
+  background: var(--nh-danger);
+  color: var(--nh-text-inverse);
+}
+
+.danger:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+.link {
+  background: transparent;
+  color: var(--nh-brand);
+  padding: 0;
+  height: auto;
+}
+
+.link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

@@ -5,7 +5,10 @@ import { FeatureBoundary } from '@/shared/ui/FeatureBoundary';
 export default function OperatorPage() {
   return (
     <>
-      <h1>Meus editais</h1>
+      <header style={{ display: 'grid', gap: 'var(--nh-space-1)' }}>
+        <h1>Quadro de editais</h1>
+        <p style={{ color: 'var(--nh-text-secondary)' }}>Acompanhe o fluxo por etapa com regras e prazos.</p>
+      </header>
       <FeatureBoundary feature="operator-board">
         <OperatorBoard />
       </FeatureBoundary>

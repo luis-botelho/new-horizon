@@ -5,11 +5,13 @@ import { FeatureBoundary } from '@/shared/ui/FeatureBoundary';
 export default function NovoEditalPage() {
   return (
     <>
-      <h1>Novo edital</h1>
-      <p>
-        Leia o PDF do edital (ou cole o JSON), revise os dados e exporte a pasta completa no padrão
-        da empresa — tudo local, no seu navegador.
-      </p>
+      <header style={{ display: 'grid', gap: 'var(--nh-space-1)' }}>
+        <h1>Novo edital</h1>
+        <p style={{ color: 'var(--nh-text-secondary)' }}>
+          Leia o PDF do edital (ou cole o JSON), revise os dados e exporte a pasta completa no padrão
+          da empresa — tudo local, no seu navegador.
+        </p>
+      </header>
       <FeatureBoundary feature="local-export">
         <NovoEditalClient />
       </FeatureBoundary>

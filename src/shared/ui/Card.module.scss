@@ -1,0 +1,23 @@
+.card {
+  background: var(--nh-surface-raised);
+  border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius-md);
+  box-shadow: var(--nh-shadow-card);
+  padding: var(--nh-space-4);
+  display: grid;
+  gap: var(--nh-space-3);
+}
+
+.hoverable {
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  cursor: grab;
+}
+
+.hoverable:hover {
+  border-color: var(--nh-border-strong);
+  box-shadow: var(--nh-shadow-card-hover);
+}
+
+.hoverable:active {
+  cursor: grabbing;
+}
